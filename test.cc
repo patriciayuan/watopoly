@@ -29,6 +29,8 @@ class Player {
 public:
     Player(string name, char symbol);
     // set defaults in MIL
+    int getMoney() { return balance; }
+    int getDebt() { return debt; }
     void setTimsCups(int cups) { timsCups = cups; }
     void setMoney(int m) { balance = m; }
     void setPos(int p) { pos = p; }
@@ -200,7 +202,15 @@ class Game {
         // moves the current player
 
 
-        bool kill(int player); // check if player can be killed, if can kill, if not no
+        bool kill(int player) { // check if player can be killed, if can kill, if not no
+            if (players[currPlayerInd]->getMoney() < players[currPlayerInd]->getDebt()) {
+                players.erase(players.begin() + currPlayerInd);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
         void save(string fname); // saves game to file fname, continues game
         
 
@@ -284,3 +294,5 @@ int main(int argc, char * argv[]) {
 
 
 }
+
+
