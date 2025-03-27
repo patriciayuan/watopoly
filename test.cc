@@ -14,7 +14,7 @@
 
 using namespace std;
 
-class Squares;
+
 class Building;
 
 class Player {
@@ -27,10 +27,14 @@ class Player {
 
 
 public:
-    Player(string name, char symbol);
+    Player(string name, char symbol) : 
+        name{name}, symbol{symbol}, balance{1500}, pos{0}, timsCups{0}, debt{0} {}
+
     // set defaults in MIL
     int getMoney() { return balance; }
     int getDebt() { return debt; }
+    int getPos() { return pos; }
+    char getSym() { return symbol; }
     void setTimsCups(int cups) { timsCups = cups; }
     void setMoney(int m) { balance = m; }
     void setPos(int p) { pos = p; }
@@ -48,8 +52,45 @@ public:
 
 };
 
+class Square {
+        int pos;
+        string name;
+        vector<shared_ptr<Player>> onsquare;
+    public:
+        Square(int pos, string name) : pos{pos}, name{name} {}
+        
+        // used for adding during set up, not move.
+        void addPlayer(shared_ptr<Player> player) { onsquare.emplace_back(player); } 
+        
+        string getName() { return name; }
+        int getPos() { return pos; }
+        vector<char> getPlayers() {
+            vector<char> symbols;
+            for (auto & player : onsquare) {
+                symbols.emplace_back(player->getSym());
+            }
+            return symbols;
+        }
+        
+        void removePlayer(shared_ptr<Player> player) {
+            for (auto it = onsquare.begin(); it != onsquare.end(); ++it) {
+                if (*it == player) {
+                    onsquare.erase(it);
+                    break; // Exit loop once removed
+                }
+            }
+        }
 
-map<int, string> squareNames = {
+        void land(shared_ptr<Player> player) {
+            // will notify 
+            addPlayer(player); // for now
+        }
+
+
+};
+
+
+map<int, string> posAndName = {
     // bottom
     {1, "COLLECT OSAP"},
     {2, "AL"},
@@ -104,31 +145,69 @@ map<int, string> squareNames = {
 class Board {
         vector<shared_ptr<Player>> players;
         vector<shared_ptr<Player>> timsLine;
-        // vector<shared_ptr<Squares>> squares;
+        vector<unique_ptr<Square>> squares;
 
     public:
         Board(vector<shared_ptr<Player>> players) : players{players} {
             // create squares
+            for (int i = 1; i <= 40; i++) {
+                squares.emplace_back(make_unique<Square>(i, posAndName[i]));
+            }
+
+            for (auto & player : players) {
+                int pos = player->getPos();
+                squares[pos]->addPlayer(player);
+            }
+
         }
         // start == CollectOSAP
         
         void printBoard() {
-            vector<int> top = {21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
             vector<int> bottom = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-
+            for (int  i = 21; i <= 31; i++) {
+                printSquare(i);
+            }
+            cout << "\n";
+            for (int i = 20, j = 12; i >= 12 && j <= 28; i--, j = j + 2) {
+                printSquare(i);
+                printSquare(-1);
+                printSquare(i + j);
+            }
+            cout << "\n";
+            for (int i = 11; i >= 1; i++) {
+                printSquare(i);
+            }
         }
 
         void printSquare(int pos) {
+            // will format
+            if (pos == -1) {
+                cout << "    \n"; // empty middle
+            
+            } else {
+                squares[pos]->getName();
+                vector<char> pieces = squares[pos]->getPlayers();
+                for (auto & sym : pieces) {
+                    cout << sym << " ";
+                }
+                cout << endl;
 
+            } 
 
         }
 
-        
+        void move(shared_ptr<Player> player, int moved) {
+            int pos = player->getPos();
+            squares[pos]->removePlayer(player);
+            squares[pos + moved]->land(player);
 
+        }
 
-        
+        void removePlayer(shared_ptr<Player> player) {
+            int pos = player->getPos();
+            squares[pos]->removePlayer(player);
+        }
 
-        void setSquare(); // adds squares to the 
 
 
     
@@ -154,7 +233,8 @@ shared_ptr<Player> readPlayer(const string& in) {
             if (placeInLine != 0) {
                 stream >> turnsInLine;
             }
-            // may create a tims line object, idk yet idrk what the tims line does
+            // may create a tims line object, idk yet 
+            // idrk what the tims line does
         }
     }
 
@@ -181,8 +261,9 @@ class Game {
                 }
             }
             
-            auto board = make_unique<Board>(players);
-            // Do board setup
+            board = make_unique<Board>(players); // board ctor will set up players
+            // owners and stuff will come later
+            
         }
 
         int getCurrent() { return currPlayerInd; }
@@ -197,13 +278,17 @@ class Game {
             }
         }
 
-        void move(); 
-        // rolls die (random number generator, may create die method)
-        // moves the current player
+        void move() {
+            // rolls die (random number generator, may create die method)
+            // moves the current player
+            int moves = 3; // temp, will make die class later
+            board->move(players[currPlayerInd], moves);
+        }
 
 
         bool kill(int player) { // check if player can be killed, if can kill, if not no
             if (players[currPlayerInd]->getMoney() < players[currPlayerInd]->getDebt()) {
+                board->removePlayer(players[currPlayerInd]);
                 players.erase(players.begin() + currPlayerInd);
                 return true;
             } else {
@@ -212,6 +297,7 @@ class Game {
         }
         
         void save(string fname); // saves game to file fname, continues game
+        void print() { board->printBoard(); }
         
 
 
@@ -225,8 +311,8 @@ int main(int argc, char * argv[]) {
     // create game, which will create a board
     // run through each command: roll, next, improve, mortgage, unmortgage, bankrupt, assets, all, save
     // need to save to file and save games. 
-    istream &in = cin;
-    if (argc >= 2 && argv[1] == "-load") {
+    // istream &in = cin;
+    if (argc >= 2 && std::string(argv[1]) == "-load") {
         ifstream ifs{argv[2]};
         auto game = make_unique<Game>(ifs);
     } 
@@ -238,12 +324,13 @@ int main(int argc, char * argv[]) {
     string command;
     string name, give, receive, property;
     string filename;
-    cin >> command;
+    // cin >> command;
 
     while(cin >> command) {
         if (command == "roll") {
             game->move();
 
+            game->print();
         } else if (command == "next") {
             game->next();
 
@@ -272,13 +359,13 @@ int main(int argc, char * argv[]) {
 
         } else if (command == "assets") {
             // does not work if the player is deciding how to pay tuition
-            game->getAssets(game->getCurrent());
+            // game->getAssets(game->getCurrent());
         } else if (command == "all") {
             // does not work if a player is deciding how to pay tuition
-            game->getAssets();
+            // game->getAssets();
         } else if (command == "save") {
             cin >> filename;
-            game->save(filename);
+            // game->save(filename);
 
         }
     }
