@@ -1,8 +1,12 @@
+export module board;
+
+import <iostream>;
+import <memory>;
 
 using namespace std;
 
 
-class Board {
+export class Board {
         vector<shared_ptr<Player *>> players;
         vector<shared_ptr<Player *>> timsLine;
         vector<shared_ptr<Squares>> squares;

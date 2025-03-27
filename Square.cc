@@ -11,10 +11,11 @@ export class Square {
     protected:
         string name;
         int pos;
+        <vector<shared_ptr<Player>> onSquare; // need to keep track of the players on the square
     public:
         Square(const string& name, int pos);  //ctor
         virtual ~Square();   //dtor
-        virtual void landed(shared_ptr<Player> player) =0; //action when player land on square
+        virtual void landed(shared_ptr<Player> player) = 0; //action when player land on square
         virtual void passOver(shared_ptr<Player> player); //action when player pass a square
         const string& getName() const;
         int getPos() const;   

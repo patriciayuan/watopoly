@@ -1,16 +1,13 @@
-
-
-
-
+export module player;
+import <memory>;
 import <string>;
 
 
 using namespace std;
 
-class Player {
+export class Player {
         string name;
         char symbol;
-        bool turn;
         int balance;
         int pos;
         <vector<Improvements>> improvements;

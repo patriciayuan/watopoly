@@ -5,7 +5,7 @@ import player;
 import <string>;
 using namespace std;
 
-Square::square(Const string& name, int pos): name(name), pos(pos);{}
+Square::Square(Const string& name, int pos): name(name), pos(pos);{}
 Square::passOver(shared_ptr<Player>player){
     cout << player->getName(); << " passed " << name << endl; //testing purpose, delete later
     if(name == "COLLECT OSAP"){
