@@ -10,10 +10,11 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <iomanip>
 #include <string>
 
 using namespace std;
-
+const int SQUARE_WIDTH = 8;
 
 class Building;
 
@@ -149,6 +150,7 @@ class Board {
 
     public:
         Board(vector<shared_ptr<Player>> players) : players{players} {
+            cout << "board ctor" << endl;
             // create squares
             for (int i = 1; i <= 40; i++) {
                 squares.emplace_back(make_unique<Square>(i, posAndName[i]));
@@ -162,44 +164,64 @@ class Board {
         }
         // start == CollectOSAP
         
+
         void printBoard() {
             vector<int> bottom = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-            for (int  i = 21; i <= 31; i++) {
+        
+            // Print top row
+            for (int i = 21; i <= 31; i++) {
                 printSquare(i);
             }
             cout << "\n";
-            for (int i = 20, j = 12; i >= 12 && j <= 28; i--, j = j + 2) {
+        
+            // Print middle section with spacing
+            for (int i = 20, j = 12; i >= 12 && j <= 28; i--, j += 2) {
                 printSquare(i);
-                printSquare(-1);
+                cout << setw(SQUARE_WIDTH) << " "; // Uniform spacing for empty middle
                 printSquare(i + j);
+                cout << "\n";
             }
-            cout << "\n";
-            for (int i = 11; i >= 1; i++) {
+            
+        
+            // Print bottom row
+            for (int i : bottom) {
                 printSquare(i);
             }
         }
-
+        
         void printSquare(int pos) {
-            // will format
             if (pos == -1) {
-                cout << "    \n"; // empty middle
-            
-            } else {
-                squares[pos]->getName();
+                cout << setw(SQUARE_WIDTH) << " "; // Uniform empty space
+                return;
+            }
+        
+            // Ensure `squares[pos]` is valid
+            if (pos >= 0 && pos < squares.size()) {
+                cout << setw(SQUARE_WIDTH) << left << squares[pos]->getName(); // Fixed width
                 vector<char> pieces = squares[pos]->getPlayers();
-                for (auto & sym : pieces) {
-                    cout << sym << " ";
+                
+                if (!pieces.empty()) {
+                    cout << "(";
+                    for (size_t i = 0; i < pieces.size(); i++) {
+                        cout << pieces[i];
+                        if (i < pieces.size() - 1) cout << ","; // Separate players with commas
+                    }
+                    cout << ")";
+                } else {
+                    cout << " "; // Maintain spacing if no players
                 }
-                cout << endl;
-
-            } 
-
+            } else {
+                cout << setw(SQUARE_WIDTH) << "??"; // Placeholder for invalid squares
+            }
         }
 
         void move(shared_ptr<Player> player, int moved) {
+            cout << "game, move" << endl;
             int pos = player->getPos();
+            cout << pos << endl;
             squares[pos]->removePlayer(player);
             squares[pos + moved]->land(player);
+            player->setPos(pos + moved);
 
         }
 
@@ -214,6 +236,7 @@ class Board {
 };
 
 shared_ptr<Player> readPlayer(const string& in) {
+    cout << "readPlayer" << endl;
     istringstream stream{in};
     string name;
     char symbol;
@@ -228,7 +251,7 @@ shared_ptr<Player> readPlayer(const string& in) {
         player->setMoney(money);
         player->setPos(pos);
 
-        if (pos == 10) {
+        if (pos == 10 && stream) {
             stream >> placeInLine;
             if (placeInLine != 0) {
                 stream >> turnsInLine;
@@ -251,6 +274,7 @@ class Game {
         // creates board and players
         // <shared_ptr<Player>> readPlayers(string & in);
         Game(istream& in = cin) : currPlayerInd{0} { // Constructor for loading a saved game
+            cout << "game ctor" << endl;
             in >> numPlayers;  
             in.ignore(); // Ignore the newline after numPlayers
 
@@ -261,13 +285,25 @@ class Game {
                 }
             }
             
+            // for testing ---------------------
+            cout << "done readPlayers" << endl;
+
+            for (auto & player : players) {
+                cout << player->getSym() << endl;
+            }
+            
+            // for testing ---------------------
+            
             board = make_unique<Board>(players); // board ctor will set up players
+            cout << "board done" << endl;
             // owners and stuff will come later
             
         }
 
         int getCurrent() { return currPlayerInd; }
-        int getAssets(int player = 0);
+        int getCurrentPos() {return players[currPlayerInd]->getPos(); }
+        // int getAssets(int player);
+        
 
         void next() {
             if (currPlayerInd == numPlayers - 1) {
@@ -279,10 +315,14 @@ class Game {
         }
 
         void move() {
+            
             // rolls die (random number generator, may create die method)
             // moves the current player
             int moves = 3; // temp, will make die class later
+            cout << "called game->move(): " << moves << endl;
             board->move(players[currPlayerInd], moves);
+            cout << "game->move() successful " << endl;
+
         }
 
 
@@ -319,6 +359,8 @@ int main(int argc, char * argv[]) {
 
     auto game = make_unique<Game>();
 
+    cout << "board setup." << endl;
+
     
 
     string command;
@@ -327,8 +369,12 @@ int main(int argc, char * argv[]) {
     // cin >> command;
 
     while(cin >> command) {
+
         if (command == "roll") {
+            cout << "chose roll" << endl;
+            cout << game->getCurrentPos() << endl;
             game->move();
+            cout << game->getCurrentPos() << endl;
 
             game->print();
         } else if (command == "next") {
