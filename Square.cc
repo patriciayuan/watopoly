@@ -23,7 +23,7 @@ export class Square {
         virtual bool isOwned() const; //return if the building is owned by a player or not
         
 
-        
+
         // used for adding during set up, not move.
         void addPlayer(shared_ptr<Player> player);
 
@@ -34,6 +34,9 @@ export class Square {
 
         // for now, may be virtual method for each building and nproptery
         void land(shared_ptr<Player> player);
+
+        // sets up this to print
+        vector<string> Square::printSquare();
 };
 
 

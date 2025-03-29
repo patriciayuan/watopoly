@@ -15,7 +15,7 @@ export class Player {
 
 public:
     Player(string name, char symbol) : 
-        name{name}, symbol{symbol}, balance{1500}, pos{0}, timsCups{0}, debt{0} {}
+        name{name}, symbol{symbol}, balance{0}, pos{0}, timsCups{0}, debt{0} {}
 
     int getMoney();
     int getDebt();
@@ -26,15 +26,7 @@ public:
     void setPos(int p);
     void printPlayer();
 
+    void addMoney(int money);
+    void payToPlayer(shared_ptr<Player> player, int money);
 };
-
-
-
-
-
-
-
-
-
-
 

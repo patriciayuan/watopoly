@@ -62,4 +62,52 @@ void Square::land(shared_ptr<Player> player) {
 
 
 
+vector<string> Square::printSquare() {
+    // cout << "asaaaaa" << endl; 
+
+    vector<string> load;
+
+    // load name
+    string name = getName();
+    istringstream iss{name};
+    string first, second, third;
+    iss >> first >> second >> third;
+    if (first.length() + second.length() < 7) {
+        first += " ";
+        first += second;
+        second = third;
+    }
+    load.emplace_back(first);
+    load.emplace_back(second);
+    
+    // load name 
+
+    load.emplace_back(""); // middle empty space
+    load.emplace_back(""); // will be used later when distinction is made
+    // cout << "asaa11" << endl; 
+
+    // load players
+    string player1 = "", player2 = "";
+    for (int i = 0; i < 4; i++) {
+        // Top row players (0-3)
+        if (i < onsquare.size() && onsquare[i]) {
+            player1 += onsquare[i]->getSym();
+        }
+        
+        // Bottom row players (4-7)
+        int j = i + 4;
+        if (j < onsquare.size() && onsquare[j]) {
+            player2 += onsquare[j]->getSym();
+        }
+    }
+
+    load.emplace_back(player1); 
+    load.emplace_back(player2); 
+    // cout << "asaa" << endl; 
+
+    return load;
+
+}
+
+
 
