@@ -10,7 +10,7 @@ export class NonProperty : public Square{
         NonProperty(const string &name, int pos);
         ~NonProperty() override = default;
         void landed(shared_ptr<Player> player) override = 0;
-        bool isOwnable() const override{return false};
+        bool isOwnable() const override{return false;};
 };
 export class CollectOSAP: public NonProperty{
     public:
@@ -48,7 +48,7 @@ export class CoopFee : public NonProperty{
         void landed(shared_ptr<Player>player) override;
 };
 export class SLC : public NonProperty{
-    discrete_distribution<int> slcMove;
+    discrete_distribution<int> moveDistribution;
     mt19937 random;
     public:
         SLC(int pos);

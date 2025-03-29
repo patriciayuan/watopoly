@@ -7,16 +7,16 @@ import <string>;
 using namespace std;
 NonProperty::NonProperty(const string& name, int pos): Square(name, pos){}
 
-CollectOSAP::CollectOSAP(int pos): NonProperty("COLLECT OSAP", int pos){}
+CollectOSAP::CollectOSAP(int pos): NonProperty("COLLECT OSAP", pos){}
 
 void CollectOSAP::landed(shared_ptr<Player>player){
     player->addMoney(200);
 }
 
-DcTimsLine::DcTimsLine(int pos): NonProperty("DC TIMS LINE", pos), waitingTime(0){}
+DCTimsLine::DCTimsLine(int pos): NonProperty("DC TIMS LINE", pos){}
 
 void DCTimsLine::landed(shared_ptr<Player>player){
-    player->sendToTims();
+    return;
 }
 
 GoToTims::GoToTims(int pos): NonProperty("GO TO TIMS", pos){}
@@ -57,8 +57,14 @@ void CoopFee::landed(shared_ptr<Player>player){
 
 SLC::SLC(int pos): 
     NonProperty("SLC", pos),random(random_device{}()),moveDistribution({3,4,4,3,4,4,1,1}){}
-SLC::~SLC(){};
+
 void SLC::landed(shared_ptr<Player>player){
+    static uniform_int_distribution<int> cupDistribution(1, 100);
+    if (cupDistribution(random) == 1 && player->canGetTimsCup()) {
+        player->addTimsCup();
+        cout << player->getName() << " got a Roll Up the Rim cup" << endl;
+        return;
+    }
     int movement = calcMovement();
     string description = getMovement(movement);
     if(movement == 6){
@@ -95,7 +101,7 @@ string SLC::getMovement(int movement) const{
         "Go to Collect OSAP"
     };
     static const array<int, 8> movementIndex = {0,1,2,3,4,5,6,7};
-    for(size_t i=0; i<movementIndex.size(), ++i){
+    for(size_t i=0; i<movementIndex.size(); ++i){
         if(movementIndex[i] == movement){
             return description[i];
         }
