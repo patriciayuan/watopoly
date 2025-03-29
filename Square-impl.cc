@@ -10,7 +10,7 @@ Square::Square(int pos, const string& name): name(name), pos(pos);{}
 Square::passOver(shared_ptr<Player>player){
     cout << player->getName(); << " passed " << name << endl; //testing purpose, delete later
     if(name == "COLLECT OSAP"){
-        player->addBal(200);
+        player->addMoney(200);
         cout << player->getName(); << " collected 200$ from osap" << endl; //testing, delete later
     }
 }
@@ -44,6 +44,7 @@ void Square::removePlayer(shared_ptr<Player> player) {
         }
     }
 }
+
 
 // returns a vector of player symbols currently on square
 vector<char> Square::getPlayers() { 

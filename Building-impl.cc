@@ -17,7 +17,7 @@ void Building::landed(shared_ptr<Player>player){
         }else{
             int tuition = calcTuition(player);
             cout << player->getName() << " pays" << tuition << " to " <<ownerptr->getName() << endl;
-            player->tranferBal(ownerPtr, tuition);
+            player->payToPlayer(ownerPtr, tuition);
         }
     }else{
         cout<< player->getName() << " landed on unowned " << name << ", cost:$ " << cost <<endl;
