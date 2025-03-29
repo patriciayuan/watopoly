@@ -15,7 +15,6 @@ class Board {
 
         void printBoard();
         
-        void printSquare(int pos);
 
         void move(shared_ptr<Player> player, int moved);
 

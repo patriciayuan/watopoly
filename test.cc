@@ -80,6 +80,53 @@ class Square {
             addPlayer(player); // for now
         }
 
+        vector<string> printSquare() {
+            // cout << "asaaaaa" << endl; 
+
+            vector<string> load;
+
+            // load name
+            string name = getName();
+            istringstream iss{name};
+            string first, second, third;
+            iss >> first >> second >> third;
+            if (first.length() + second.length() < 7) {
+                first += " ";
+                first += second;
+                second = third;
+            }
+            load.emplace_back(first);
+            load.emplace_back(second);
+            
+            // load name 
+
+            load.emplace_back(""); // middle empty space
+            load.emplace_back(""); // will be used later when distinction is made
+            // cout << "asaa11" << endl; 
+
+            // load players
+            string player1 = "", player2 = "";
+            for (int i = 0; i < 4; i++) {
+                // Top row players (0-3)
+                if (i < onsquare.size() && onsquare[i]) {
+                    player1 += onsquare[i]->getSym();
+                }
+                
+                // Bottom row players (4-7)
+                int j = i + 4;
+                if (j < onsquare.size() && onsquare[j]) {
+                    player2 += onsquare[j]->getSym();
+                }
+            }
+
+            load.emplace_back(player1); 
+            load.emplace_back(player2); 
+            // cout << "asaa" << endl; 
+
+            return load;
+
+        }
+
 
 };
 
@@ -99,7 +146,7 @@ map<int, string> posAndName = {
     {11, "DC Tims Line"},
     
     // left
-    {1, "RCH"},
+    {12, "RCH"},
     {13, "PAC"},
     {14, "DWE"},
     {15, "CPH"},
@@ -159,54 +206,103 @@ class Board {
         
 
         void printBoard() {
-            vector<int> bottom = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+            
+            // Draw the top border
+            for (int i = 0; i <= 88; i++) {
+                cout << "_";
+            }
+            cout << endl;
         
-            // Print top row
-
+            // Load top row of squares (21-31)
+            vector<vector<string>> printLoadOut;
+            // cout << "hello" << endl;
             for (int i = 21; i <= 31; i++) {
-                printSquare(i);
+                // cout << squares[i - 1]->getName() << endl;
+                
+                printLoadOut.emplace_back(squares[i - 1]->printSquare());
             }
-            cout << "\n";
-        
-            // Print middle section with spacing
-            for (int i = 20, j = 12; i >= 12 && j <= 28; i--, j += 2) {
-                printSquare(i);
-                cout << setw(SQUARE_WIDTH) << " "; // Uniform spacing for empty middle
-                printSquare(i + j);
-                cout << "\n";
-            }
+            // cout << "asd2" << endl;
+
             
         
+            // Print top row
+            for (int i = 0; i < 7; i++) { // Rows within square display
+                cout << "|";
+                for (int j = 0; j < 11; j++) { // Columns
+                    if (i == 6) {
+                        cout << "_______";
+                    } else {
+                        cout << setw(7) << printLoadOut[j][i];
+                    }
+                    cout << "|";
+                }
+                cout << "\n";
+            }
+        
+            // Load left and right side squares
+            vector<vector<string>> printSides;
+            for (int i = 20, j = 12; i >= 12 && j <= 28; i--, j += 2) {
+
+                printSides.emplace_back(squares[i - 1]->printSquare());
+                printSides.emplace_back(squares[i + j - 1]->printSquare());
+                for (int j = 0; j < 7; j++) {
+                    if (j == 6){
+                        cout << "|_______|";
+                        for (int k = 0; k <= 70; k++) {
+                            if (i == 12) {
+                                cout << "_";
+                            } else {
+                                cout << " ";
+                            }
+                        }
+                        cout << "|_______|";
+
+                    } else {
+                        cout << "|";
+                        cout << setw(7) << printSides[0][j];
+                        cout << "|";
+                        for (int k = 0; k <= 70; k++) {
+                            cout << " ";
+                            
+                        }
+                        cout << "|";
+                        cout << setw(7) << printSides[1][j];
+                        cout << "|";
+                    }
+                    cout << "\n";
+                    
+                }
+                printSides.clear();
+
+            }
+        
+            // Load bottom row (1-11)
+            printLoadOut.clear();
+            for (int i = 11; i >= 1; i--) {
+                printLoadOut.emplace_back(squares[i - 1]->printSquare());
+            }
+        
             // Print bottom row
-            for (int i : bottom) {
-                printSquare(i);
+            for (int i = 0; i < 7; i++) { // Rows
+                cout << "|";
+                for (int j = 0; j < 11; j++) { // Columns
+                    if (i == 6) {
+                        cout << "_______";
+                    } else {
+                        cout << setw(7) << printLoadOut[j][i];
+                    }
+                    cout << "|";
+                }
+                cout << "\n";
             }
         }
         
-        void printSquare(int pos) {
-            if (pos == -1) {
-                cout << setw(SQUARE_WIDTH) << " "; // Uniform empty space
-                return;
-            }
         
-            // Ensure `squares[pos]` is valid
-            if (pos >= 0 && pos < squares.size()) {
-                cout << setw(SQUARE_WIDTH) << left << squares[pos]->getName(); // Fixed width
-                vector<char> pieces = squares[pos]->getPlayers();
-                
-                if (!pieces.empty()) {
-                    cout << "(";
-                    for (size_t i = 0; i < pieces.size(); i++) {
-                        cout << pieces[i];
-                        if (i < pieces.size() - 1) cout << ","; // Separate players with commas
-                    }
-                    cout << ")";
-                } else {
-                    cout << " "; // Maintain spacing if no players
-                }
-            } else {
-                cout << setw(SQUARE_WIDTH) << "??"; // Placeholder for invalid squares
-            }
+    
+
+        void removePlayer(shared_ptr<Player> player) {
+            int pos = player->getPos();
+            squares[pos]->removePlayer(player);
         }
 
         void move(shared_ptr<Player> player, int moved) {
@@ -216,12 +312,7 @@ class Board {
             squares[pos]->removePlayer(player);
             squares[pos + moved]->land(player);
             player->setPos(pos + moved);
-
-        }
-
-        void removePlayer(shared_ptr<Player> player) {
-            int pos = player->getPos();
-            squares[pos]->removePlayer(player);
+        
         }
 
 

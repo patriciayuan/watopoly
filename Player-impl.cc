@@ -15,6 +15,15 @@ void Player::setMoney(int m) { balance = m; }
 void Player::setPos(int p) { pos = p; }
 void Player::printPlayer() { cout << symbol; }
 
+void Player::addMoney(int money) { balance += money; }
+
+void Player::payToPlayer(shared_ptr<Player> player, int money) {
+    balance -= money;
+    player->addMoney(money);
+}
+
+
+
 
 
 

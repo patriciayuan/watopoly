@@ -68,56 +68,93 @@ Board::Board(vector<shared_ptr<Player>> players) : players{players} {
 
 
 // im still trying to figure out how to print board
-void Board::printBoard() {
-    vector<int> bottom = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-
-    // Print top row
-
-    for (int i = 21; i <= 31; i++) {
-        printSquare(i);
+void Board::        void printBoard() {
+            
+    // top border
+    for (int i = 0; i <= 88; i++) {
+        cout << "_";
     }
-    cout << "\n";
+    cout << endl;
 
-    // Print middle section with spacing
-    for (int i = 20, j = 12; i >= 12 && j <= 28; i--, j += 2) {
-        printSquare(i);
-        cout << setw(SQUARE_WIDTH) << " "; // Uniform spacing for empty middle
-        printSquare(i + j);
+    // load top row
+    vector<vector<string>> printLoadOut;
+    for (int i = 21; i <= 31; i++) {
+        printLoadOut.emplace_back(squares[i - 1]->printSquare());
+    }
+
+    // print top row
+    for (int i = 0; i < 7; i++) { // rows
+        cout << "|";
+        for (int j = 0; j < 11; j++) { // cols
+            if (i == 6) {
+                cout << "_______";
+            } else {
+                cout << setw(7) << printLoadOut[j][i];
+            }
+            cout << "|";
+        }
         cout << "\n";
     }
-    
 
-    // Print bottom row
-    for (int i : bottom) {
-        printSquare(i);
-    }
-}
+    // sides
+    vector<vector<string>> printSides;
+    for (int i = 20, j = 12; i >= 12 && j <= 28; i--, j += 2) {
 
-void Board::printSquare(int pos) {
-    if (pos == -1) {
-        cout << setw(SQUARE_WIDTH) << " "; // Uniform empty space
-        return;
-    }
+        printSides.emplace_back(squares[i - 1]->printSquare());
+        printSides.emplace_back(squares[i + j - 1]->printSquare());
+        for (int j = 0; j < 7; j++) {
+            if (j == 6){
+                cout << "|_______|";
+                for (int k = 0; k <= 70; k++) {
+                    if (i == 12) {
+                        cout << "_";
+                    } else {
+                        cout << " ";
+                    }
+                }
+                cout << "|_______|";
 
-    // Ensure `squares[pos]` is valid
-    if (pos >= 0 && pos < squares.size()) {
-        cout << setw(SQUARE_WIDTH) << left << squares[pos]->getName(); // Fixed width
-        vector<char> pieces = squares[pos]->getPlayers();
-        
-        if (!pieces.empty()) {
-            cout << "(";
-            for (size_t i = 0; i < pieces.size(); i++) {
-                cout << pieces[i];
-                if (i < pieces.size() - 1) cout << ","; // Separate players with commas
+            } else {
+                cout << "|";
+                cout << setw(7) << printSides[0][j];
+                cout << "|";
+                for (int k = 0; k <= 70; k++) {
+                    cout << " ";
+                    
+                }
+                cout << "|";
+                cout << setw(7) << printSides[1][j];
+                cout << "|";
             }
-            cout << ")";
-        } else {
-            cout << " "; // Maintain spacing if no players
+            cout << "\n";
+            
         }
-    } else {
-        cout << setw(SQUARE_WIDTH) << "??"; // Placeholder for invalid squares
+        printSides.clear();
+
+    }
+
+    // load botom
+    printLoadOut.clear();
+    for (int i = 11; i >= 1; i--) {
+        printLoadOut.emplace_back(squares[i - 1]->printSquare());
+    }
+
+    // print bottom
+    for (int i = 0; i < 7; i++) { // rows
+        cout << "|";
+        for (int j = 0; j < 11; j++) { // cols
+            if (i == 6) {
+                cout << "_______";
+            } else {
+                cout << setw(7) << printLoadOut[j][i];
+            }
+            cout << "|";
+        }
+        cout << "\n";
     }
 }
+
+
 
 void Board::move(shared_ptr<Player> player, int moved) {
     cout << "game, move" << endl;
