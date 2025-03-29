@@ -6,34 +6,25 @@ import <string>;
 using namespace std;
 
 export class Player {
-        string name;
-        char symbol;
-        int balance;
-        int pos;
-        <vector<Improvements>> improvements;
-        <vector<Building>> assets;
+    string name;
+    char symbol;
+    int balance, pos, timsCups, debt;
 
+    // <vector<Improvements>> improvements;
+    // <vector<Building>> assets;
 
-    public:
-        int getPos();
-        void setPost();
-        int getBal();
-        void addBal(int);
-        void payBal(int);
-        string getName();
-        char getPiece();
-        Bool ownsProperty(Building *);
-        void addProperty(Building *);
-        void removeProperty(Building *);
-        void transferBal(Player *, int);
-        void move(int);
-        void sendToTimes();
-        void releaseFromTims();
-        <vector<Building>> getAssets();
-        <vector<Improvements>> improvements();
-        void kill();
+public:
+    Player(string name, char symbol) : 
+        name{name}, symbol{symbol}, balance{1500}, pos{0}, timsCups{0}, debt{0} {}
 
-
+    int getMoney();
+    int getDebt();
+    int getPos();
+    char getSym();
+    void setTimsCups(int cups);
+    void setMoney(int m);
+    void setPos(int p);
+    void printPlayer();
 
 };
 

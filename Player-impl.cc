@@ -3,10 +3,17 @@ module player;
 import <memory>;
 import <string>;
 
-Player::Player(string playerName, char playerSymbol, timsCups, money, pos, placeInLine, turnsInLine) :
-    name{playerName}, symbol{playerSymbol}, {
+Player::Player(string name, char symbol) : 
+    name{name}, symbol{symbol}, balance{1500}, pos{0}, timsCups{0}, debt{0} {}
 
-}
+int Player::getMoney() { return balance; }
+int Player::getDebt() { return debt; }
+int Player::getPos() { return pos; }
+char Player::getSym() { return symbol; }
+void Player::setTimsCups(int cups) { timsCups = cups; }
+void Player::setMoney(int m) { balance = m; }
+void Player::setPos(int p) { pos = p; }
+void Player::printPlayer() { cout << symbol; }
 
 
 

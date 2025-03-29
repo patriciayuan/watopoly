@@ -5,6 +5,9 @@
 // import <string>;
 
 #include <iostream>
+#include <random>
+#include <cstdlib>
+#include <ctime>
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -39,17 +42,7 @@ public:
     void setTimsCups(int cups) { timsCups = cups; }
     void setMoney(int m) { balance = m; }
     void setPos(int p) { pos = p; }
-    void printPlayer() { 
-        // cout << name;
-        cout << symbol;
-    }
-
-
-
-    int move(int pos); // takes target position
-
-
-
+    void printPlayer() { cout << symbol; }
 
 };
 
@@ -169,6 +162,7 @@ class Board {
             vector<int> bottom = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
         
             // Print top row
+
             for (int i = 21; i <= 31; i++) {
                 printSquare(i);
             }
@@ -264,9 +258,28 @@ shared_ptr<Player> readPlayer(const string& in) {
     return player;
 }
 
+
+class Dice {
+        int numSides;
+        vector<int> sides;
+
+    public:
+
+        Dice(int numSides = 6) : numSides{numSides} {
+            for (int i = 0; i <= numSides; i++) {
+                sides.emplace_back(i);
+            }
+        }
+
+        int roll() {
+            return { rand() % 6 };
+        }
+};
+
 class Game {
         unique_ptr<Board> board;
         vector<shared_ptr<Player>> players;
+        vector<unique_ptr<Dice>> dice;
         int numPlayers;
         int currPlayerInd;
 
@@ -282,6 +295,7 @@ class Game {
             for (int i = 0; i < numPlayers; i++) {
                 if (getline(in, line)) {  // Read a full line
                     players.push_back(readPlayer(line)); // Pass string to readPlayer
+                    
                 }
             }
             
@@ -295,6 +309,10 @@ class Game {
             // for testing ---------------------
             
             board = make_unique<Board>(players); // board ctor will set up players
+            
+            dice.emplace_back(std::make_unique<Dice>(6)); // make 6-sided die
+            dice.emplace_back(std::make_unique<Dice>(6));
+
             cout << "board done" << endl;
             // owners and stuff will come later
             
@@ -302,13 +320,11 @@ class Game {
 
         int getCurrent() { return currPlayerInd; }
         int getCurrentPos() {return players[currPlayerInd]->getPos(); }
-        // int getAssets(int player);
         
 
-        void next() {
+        void next() { // changes player to next player
             if (currPlayerInd == numPlayers - 1) {
                 currPlayerInd = 0;
-
             } else {
                 currPlayerInd++;
             }
@@ -318,7 +334,8 @@ class Game {
             
             // rolls die (random number generator, may create die method)
             // moves the current player
-            int moves = 3; // temp, will make die class later
+            
+            int moves = dice[1]->roll() + dice[2]->roll(); // roll dice
             cout << "called game->move(): " << moves << endl;
             board->move(players[currPlayerInd], moves);
             cout << "game->move() successful " << endl;

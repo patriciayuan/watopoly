@@ -6,33 +6,54 @@ import <map>;
 import <memory>;      
 import <string>;      
 
-using namespace std;
 
+// #include <iostream>
+// #include <random>
+// #include <cstdlib>
+// #include <ctime>
+// #include <fstream>
+// #include <sstream>
+// #include <vector>
+// #include <map>
+// #include <memory>
+// #include <iomanip>
+// #include <string>
+
+
+
+using namespace std;
 
 int main(int argc, char * argv[]) {
     // "-load "filename"
     // create game, which will create a board
     // run through each command: roll, next, improve, mortgage, unmortgage, bankrupt, assets, all, save
     // need to save to file and save games. 
-    istream &in = cin;
-    if (argc >= 2 && argv[1] == "-load") {
+    // istream &in = cin;
+    if (argc >= 2 && std::string(argv[1]) == "-load") {
         ifstream ifs{argv[2]};
         auto game = make_unique<Game>(ifs);
     } 
 
     auto game = make_unique<Game>();
 
+    cout << "board setup." << endl;
+
     
 
     string command;
     string name, give, receive, property;
     string filename;
-    cin >> command;
+    // cin >> command;
 
     while(cin >> command) {
-        if (command == "roll") {
-            game->move();
 
+        if (command == "roll") {
+            cout << "chose roll" << endl;
+            cout << game->getCurrentPos() << endl;
+            game->move();
+            cout << game->getCurrentPos() << endl;
+
+            game->print();
         } else if (command == "next") {
             game->next();
 
@@ -61,29 +82,20 @@ int main(int argc, char * argv[]) {
 
         } else if (command == "assets") {
             // does not work if the player is deciding how to pay tuition
-            game->getAssets(game->getCurrent());
+            // game->getAssets(game->getCurrent());
         } else if (command == "all") {
             // does not work if a player is deciding how to pay tuition
-            game->getAssets();
+            // game->getAssets();
         } else if (command == "save") {
             cin >> filename;
-            game->save(filename);
+            // game->save(filename);
 
         }
     }
 
 
 
-    
-
-    
-
-
-
-
-
 }
-
 
 
 
