@@ -8,8 +8,10 @@ using namespace std;
 export class Player {
     string name;
     char symbol;
-    int balance, pos, timsCups, debt;
-
+    int balance, pos, timsCups, debt, lastRoll;
+    bool inTimsLine;
+    int turnsInLine;
+    
     // <vector<Improvements>> improvements;
     // <vector<Building>> assets;
 
@@ -25,8 +27,14 @@ public:
     void setMoney(int m);
     void setPos(int p);
     void printPlayer();
-
     void addMoney(int money);
     void payToPlayer(shared_ptr<Player> player, int money);
+    //TimsLine functions
+    void sendToTims();
+    bool isInTimsLine();
+    bool tryToLeaveTims(bool rolledDoubles);
+    void useTimsCup();
+    void addTimsCup() const;
+
 };
 
