@@ -21,6 +21,7 @@ void DCTimsLine::landed(shared_ptr<Player>player){
 
 GoToTims::GoToTims(int pos): NonProperty("GO TO TIMS", pos){}
 void GoToTims::landed(shared_ptr<Player>player){
+    cout << "you are now being sent to tims line" << endl;
     player->sendToTims();
 }
 
@@ -58,30 +59,25 @@ void CoopFee::landed(shared_ptr<Player>player){
 SLC::SLC(int pos): 
     NonProperty("SLC", pos),random(random_device{}()),moveDistribution({3,4,4,3,4,4,1,1}){}
 
-void SLC::landed(shared_ptr<Player>player){
+int SLC::landed(shared_ptr<Player>player){
     static uniform_int_distribution<int> cupDistribution(1, 100);
     if (cupDistribution(random) == 1 && player->canGetTimsCup()) {
         player->addTimsCup();
         cout << player->getName() << " got a Roll Up the Rim cup" << endl;
-        return;
+        return -1;
     }
     int movement = calcMovement();
-    string description = getMovement(movement);
-    if(movement == 6){
-        cout << description << endl;
-        player->setPos(11);
-        player->sendToTims();
-        return;
-    }else if(movement == 7){
-        cout << description << endl;
-        player->setPos(1);
-        player->addMoney(200);
-        return;
-    }
     int newPos = (player->getPos() + movement + 40) % 40;
-    cout << description << endl;
-    player->setPos(newPos);
-    player->getBoard()->getSquare(newPos)->landed(player);
+    string description = getMovement(movement);
+    out << description << endl;
+    if(movement == 6){  //dc tims line
+        player->sendToTims();
+        return 11;
+    }else if(movement == 7){ //osap
+        player->addMoney(200);
+        return 1;
+    }
+    return newPos;
 }	
 
 int SLC::calcMovement(){

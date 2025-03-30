@@ -3,6 +3,8 @@ export module nonproperty;
 import square;
 import player;
 import <memory>;
+import <random>;
+import <array>;
 import <string>;
 using namespace std;
 export class NonProperty : public Square{
@@ -52,7 +54,7 @@ export class SLC : public NonProperty{
     mt19937 random;
     public:
         SLC(int pos);
-        void landed(shared_ptr<Player>player) override;
+        int landed(shared_ptr<Player>player) override;
     private:
         int calcMovement();
         string getMovement(int movement) const;
