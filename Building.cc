@@ -1,33 +1,47 @@
 export module building;
-import square;
+
 import <memory>;
+import <iostream>;
+import <sstream>;
+import <vector>;
 import <string>;
-using namespace std;
-export class Player;
-export class Building : public Square { 
-    protected:
-        int cost;
-        bool isMortgaged;
-        weak_ptr<Player>owner;
+
+
+import player;
+import square;
+// import board;
+
+// class Board;
+export class Building : public Square {
+
+        std::shared_ptr<Player> owner;
+        bool owned;
+
+
     public:
-        Building(const string& name, int pos, int cost);
-        virtual ~Building() = default;
-        virtual void landed(shared_ptr<Player> player)override;
-        void setOwner(shared_ptr<Player>player);
-        void mortage();
-        void unmortage();
+        Building(int pos, const std::string& name);
+        virtual void landed(std::shared_ptr<Player> player);
+        virtual void bought(std::shared_ptr<Player> player);
+        // bool Square::isOwnable() const;
+        bool isOwned() const;
+        void changeOwner(std::shared_ptr<Player> player);
+        void changeIsOwned(bool isOwned);
+        std::shared_ptr<Player> getOwner() const;
+        void setOwner(std::shared_ptr<Player> player);
 
-        bool isOwnable() const override {return true;}
-        bool owned() const override;
-        int getCost() const;
-        bool getIsMortaged() const;
-        shared_ptr<Player> getOwner() const;
+    
 
-        virtual int calcTuition(shared_ptr<Player> player) const = 0;
-        virtual bool canImprove() const {return false;}
-        virtual void improve() {throw runtime_error("Cannot improve this building");}
-        virtual void sellImprovement(){throw runtime_error("Cannot sell improvement on this building");}
 };
+
+
+
+
+
+
+
+
+
+
 
 
 

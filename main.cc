@@ -1,4 +1,6 @@
-import <iostream>;   
+import <iostream>;
+import <iomanip>;
+import <random>;  
 import <fstream>;     
 import <sstream>;     
 import <vector>;      
@@ -6,19 +8,10 @@ import <map>;
 import <memory>;      
 import <string>;      
 
-
-// #include <iostream>
-// #include <random>
-// #include <cstdlib>
-// #include <ctime>
-// #include <fstream>
-// #include <sstream>
-// #include <vector>
-// #include <map>
-// #include <memory>
-// #include <iomanip>
-// #include <string>
-
+import player;
+import square;
+import board;
+import game;
 
 
 using namespace std;
@@ -27,33 +20,25 @@ int main(int argc, char * argv[]) {
     // "-load "filename"
     // create game, which will create a board
     // run through each command: roll, next, improve, mortgage, unmortgage, bankrupt, assets, all, save
-    // need to save to file and save games. 
-    // istream &in = cin;
-    if (argc >= 2 && std::string(argv[1]) == "-load") {
-        ifstream ifs{argv[2]};
-        auto game = make_unique<Game>(ifs);
-    } 
+    // need to save to file and save games.
 
     auto game = make_unique<Game>();
 
-    cout << "board setup." << endl;
+    // if (argc >= 2 && std::string(argv[1]) == "-load") {
+    //     ifstream ifs{argv[2]};
+    //     auto game = make_unique<Game>(ifs);
+    // } 
 
-    
 
     string command;
     string name, give, receive, property;
     string filename;
-    // cin >> command;
 
     while(cin >> command) {
 
         if (command == "roll") {
-            cout << "chose roll" << endl;
-            cout << game->getCurrentPos() << endl;
             game->move();
-            cout << game->getCurrentPos() << endl;
 
-            game->print();
         } else if (command == "next") {
             game->next();
 
@@ -90,6 +75,10 @@ int main(int argc, char * argv[]) {
             cin >> filename;
             // game->save(filename);
 
+        } else if (command == "print") {
+            game->print();
+        } else if (command == "players") {
+            game->getPlayerInfo();
         }
     }
 

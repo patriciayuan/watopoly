@@ -1,59 +1,48 @@
 module building;
+
 import <memory>;
-import <stdexcept>;
 import <iostream>;
-import player;
+import <sstream>;
+import <vector>;
+import <string>;
+
 using namespace std;
-Building::Building(const string &name, int pos, int cost)
-    :Square(name, post), cost(cost),isMortaged(false){}
-void Building::landed(shared_ptr<Player>player){
-    if(isMortaged){
-        cout << player->getName() << " landed on mortaged " << name << ", so nothing happens" << endl; //testing, delete later
-        return;
-    }
-    if(auto ownerPtr = owner.lock()){
-        if(ownerPtr == player){
-            cout << player->getName() << " landed on their own property: " << name << endl
-        }else{
-            int tuition = calcTuition(player);
-            cout << player->getName() << " pays" << tuition << " to " <<ownerptr->getName() << endl;
-            player->payToPlayer(ownerPtr, tuition);
-        }
-    }else{
-        cout<< player->getName() << " landed on unowned " << name << ", cost:$ " << cost <<endl;
-        //complete later 
-    }
+
+Building::Building(int pos, const string& name) : Square{pos, name}, owned{false} {}
+
+void Building::landed(std::shared_ptr<Player> player) {
+    cout << "building ";
+    cout << player->getName() << " has landed on " << getPos() << endl;
+    addPlayer(player);
 }
-void Building::mortage(){
-    if(isMortgaged) throw runtime_error("already mortaged");
-    if(auto ownerPtr = owner.lock()){
-        ownerPtr->addBal(cost/2);
-        isMortaged = true;
-    }else{
-        throw runtime_error("cannot mortaged unowned property");
-    }
+
+
+void Building::bought(shared_ptr<Player> player) {
+    owner = player;
+    owned = true;
+    player->addAsset(getPos());
+
 }
-void Building::unmortage(){
-    if(!isMortaged) throw runtime_error("this building is not mortaged");
-    if(auto ownerPtr = owner.lock()){
-        ownerPtr->payBal(static_cast<int>(cost * 0.6));
-        isMortgaged = false;
-    }else{
-        throw runtime_error("Cannot unmortage, ur not the owner");
-    }
-}
+
 bool Building::isOwned() const {
-    return !owner.expired();
+    return owned;
 }
 
-int Building::getPurchaseCost() const {
-    return purchaseCost;
+std::shared_ptr<Player> Building::getOwner() const {
+    return owner;
 }
 
-bool Building::getIsMortgaged() const {
-    return isMortgaged;
+
+void Building::setOwner(std::shared_ptr<Player> player) {
+    changeOwner(player);
+    changeIsOwned(true);
 }
 
-shared_ptr<Player> Building::getOwner() const {
-    return owner.lock();
+void Building::changeOwner(std::shared_ptr<Player> player) {
+    owner = player;
 }
+
+void Building::changeIsOwned(bool isOwned) {
+    owned = isOwned;
+}
+

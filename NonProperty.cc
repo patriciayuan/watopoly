@@ -1,67 +1,37 @@
 export module nonproperty;
 
-import square;
-import player;
 import <memory>;
-import <random>;
-import <array>;
+import <iostream>;
+import <sstream>;
+import <vector>;
 import <string>;
-using namespace std;
-export class NonProperty : public Square{
+
+
+import player;
+import square;
+// import board;
+
+// class Board;
+export class NonProperty: public Square {
+
+        // std::shared_ptr<Board> board;
+        std::shared_ptr<Player> owner;
+
+
     public:
-        NonProperty(const string &name, int pos);
-        ~NonProperty() override = default;
-        void landed(shared_ptr<Player> player) override = 0;
-        bool isOwnable() const override{return false;};
-};
-export class CollectOSAP: public NonProperty{
-    public:
-        CollectOSAP(int pos);
-        void landed(shared_ptr<Player>player) override;
-};
-export class DCTimsLine : public NonProperty{
-    public:
-        DCTimsLine(int pos);
-        void landed(shared_ptr<Player>player) override;
-        void leaveLine(shared_ptr<Player>player, bool useCup = false);
+
+        NonProperty(int pos, const std::string& name);
+        virtual void landed(std::shared_ptr<Player> player) override;
+        virtual int newpos(std::shared_ptr<Player>player, int newpos) override;
+        virtual int turn(std::shared_ptr<Player>player) override;
+    
+
 };
 
-export class GoToTims : public NonProperty{
-    public:
-        GoToTims(int pos);
-        void landed(shared_ptr<Player>player) override;
-};
 
-export class GooseNesting : public NonProperty{
-    public:
-        GooseNesting(int pos);
-        void landed(shared_ptr<Player>player) override;
-};
 
-export class Tuition: public NonProperty{
-    public:
-        Tuition(int pos);
-        void landed(shared_ptr<Player>player) override;
-};
 
-export class CoopFee : public NonProperty{
-    public:
-        CoopFee(int pos);
-        void landed(shared_ptr<Player>player) override;
-};
-export class SLC : public NonProperty{
-    discrete_distribution<int> moveDistribution;
-    mt19937 random;
-    public:
-        SLC(int pos);
-        int landed(shared_ptr<Player>player) override;
-    private:
-        int calcMovement();
-        string getMovement(int movement) const;
-};
 
-export class NeedlesHall : public NonProperty{
-    public:
-        NeedlesHall(int pos);
-        void landed(shared_ptr<Player>player) override;
-};
+
+
+

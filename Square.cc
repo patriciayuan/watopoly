@@ -1,42 +1,47 @@
 export module square;
+
+
 import <memory>;
 import <iostream>;
+import <sstream>;
+import <vector>;
 import <string>;
 
+import player;
 
-class Board;
-class Player;
-using namespace std;
 export class Square {
     protected:
-        string name;
+        // Board* const board;
+        std::string name;
         int pos;
-        vector<shared_ptr<Player>> onsquare; // need to keep track of the players on the square
+        std::vector<std::shared_ptr<Player>> onsquare; // need to keep track of the players on the square
     public:
-        Square(const string& name, int pos);  //ctor
-        virtual ~Square();   //dtor
-        virtual void landed(shared_ptr<Player> player) = 0; //action when player land on square
-        virtual void passOver(shared_ptr<Player> player); //action when player pass a square
-        const string& getName() const;
+        Square(int pos, const std::string& name);  //ctor
+        virtual ~Square() = default;   //dtor
+        virtual void landed(std::shared_ptr<Player> player); //action when player land on square
+        // virtual void passOver(std::shared_ptr<Player> player); //action when player pass a square
+        const std::string& getName() const;
         int getPos() const;   
-        virtual bool isOwnable() const; //return if the square is building or non-property
-        virtual bool isOwned() const; //return if the building is owned by a player or not
-        
-
+        // virtual bool isOwnable() const; //return if the square is building or non-property
+        // virtual bool isOwned() const; //return if the building is owned by a player or not
 
         // used for adding during set up, not move.
-        void addPlayer(shared_ptr<Player> player);
+        void addPlayer(std::shared_ptr<Player> player);
 
-        void removePlayer(shared_ptr<Player> player);
+        void removePlayer(std::shared_ptr<Player> player);
 
         // returns a vector of player symbols currently on square
-        vector<char> getPlayers();
+        std::vector<char> getPlayers();
 
         // for now, may be virtual method for each building and nproptery
-        void land(shared_ptr<Player> player);
+        void land(std::shared_ptr<Player> player);
 
         // sets up this to print
-        vector<string> Square::printSquare();
+        std::vector<std::string> printSquare();
+
+
+        virtual int newpos(std::shared_ptr<Player>player, int newpos);
+        virtual int turn(std::shared_ptr<Player>player);
 };
 
 

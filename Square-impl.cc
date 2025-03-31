@@ -1,40 +1,42 @@
 module square;
+
 import <memory>;
 import <iostream>;
-import player;
+import <sstream>;
+import <vector>;
 import <string>;
+
+import player;
+
 using namespace std;
 
-Square::Square(int pos, const string& name): name(name), pos(pos);{}
+Square::Square(int pos, const string& name): name(name), pos(pos) {}
 
-Square::passOver(shared_ptr<Player>player){
-    cout << player->getName(); << " passed " << name << endl; //testing purpose, delete later
-    if(name == "COLLECT OSAP"){
-        player->addMoney(200);
-        cout << player->getName(); << " collected 200$ from osap" << endl; //testing, delete later
-    }
+// void Square::passOver(shared_ptr<Player>player){
+//     cout << player->getName() << " passed " << name << endl; //testing purpose, delete later
+//     if(name == "COLLECT OSAP"){
+//         player->addBal(200);
+//         cout << player->getName() << " collected 200$ from osap" << endl; //testing, delete later
+//     }
+// }
+
+
+void Square::landed(std::shared_ptr<Player> player) {
+    cout << player->getName() << " has landed on " << getPos();
+    addPlayer(player);
 }
 
+const string& Square::getName() const { return name; } // may need to reconsider returning const ref
 
-const string& Square::getName() const { // may need to reconsider returning const ref
-    return name;
-}
+int Square::getPos() const { return pos - 1; }
 
-int Square::getPos() const {
-    return pos;
-}
-bool Square::isOwnable(){
-    return false; //default not ownable, update later
-}
-bool Square::isOwned(){
-    return false; //default not owned, update later
-}
-
-
-// a move is called in game and uses removePlayer(Player) and landed(Player)
+// bool Square::isOwnable() const { return false; } //default not ownable, update later
+// bool Square::isOwned() const { return false; } //default not owned, update later
 
 // used for adding during set up, not move.
 void Square::addPlayer(shared_ptr<Player> player) { onsquare.emplace_back(player); } 
+
+// a move is called in game and uses removePlayer(Player) and landed(Player)
 
 void Square::removePlayer(shared_ptr<Player> player) {
     for (auto it = onsquare.begin(); it != onsquare.end(); ++it) {
@@ -45,6 +47,11 @@ void Square::removePlayer(shared_ptr<Player> player) {
     }
 }
 
+// for now, may be virtual method for each building and nproptery
+// void Square::land(shared_ptr<Player> player) { 
+//     // will notify 
+//     addPlayer(player); // for now
+// }
 
 // returns a vector of player symbols currently on square
 vector<char> Square::getPlayers() { 
@@ -55,20 +62,9 @@ vector<char> Square::getPlayers() {
     return symbols;
 }
 
-// for now, may be virtual method for each building and nproptery
-void Square::land(shared_ptr<Player> player) { 
-    // will notify 
-    addPlayer(player); // for now
-}
-
-
-
 vector<string> Square::printSquare() {
-    // cout << "asaaaaa" << endl; 
-
     vector<string> load;
 
-    // load name
     string name = getName();
     istringstream iss{name};
     string first, second, third;
@@ -89,14 +85,14 @@ vector<string> Square::printSquare() {
 
     // load players
     string player1 = "", player2 = "";
-    for (int i = 0; i < 4; i++) {
+    for (size_t i = 0; i < 4; i++) {
         // Top row players (0-3)
         if (i < onsquare.size() && onsquare[i]) {
             player1 += onsquare[i]->getSym();
         }
         
         // Bottom row players (4-7)
-        int j = i + 4;
+        size_t j = i + 4;
         if (j < onsquare.size() && onsquare[j]) {
             player2 += onsquare[j]->getSym();
         }
@@ -110,5 +106,13 @@ vector<string> Square::printSquare() {
 
 }
 
+
+int Square::newpos(std::shared_ptr<Player>player, int newpos) {
+    return getPos();
+}
+
+int Square::turn(std::shared_ptr<Player>player) { // deafult impl
+    return 0;
+}
 
 

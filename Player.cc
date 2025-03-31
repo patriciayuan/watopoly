@@ -1,23 +1,32 @@
 export module player;
+import <iostream>;
+import <vector>;
 import <memory>;
 import <string>;
 
-
-using namespace std;
+// import board;
+class Building;
+// class Board;
 
 export class Player {
-    string name;
-    char symbol;
-    int balance, pos, timsCups, debt, lastRoll;
+    std::string name;
     bool inTimsLine;
+    char symbol;
+    int balance;
+    int pos;
+    int timsCups;
+    int debt;
     int turnsInLine;
-    
+    int previous; // stores previous position
+    // int assets;
+    // std::shared_ptr<Board> board;
+
+    // vector<int> rolls = {last 2 rolls};
     // <vector<Improvements>> improvements;
-    // <vector<Building>> assets;
+    std::vector<int> assets;
 
 public:
-    Player(string name, char symbol) : 
-        name{name}, symbol{symbol}, balance{0}, pos{0}, timsCups{0}, debt{0} {}
+    Player(std::string name, char symbol);
 
     int getMoney();
     int getDebt();
@@ -27,14 +36,42 @@ public:
     void setMoney(int m);
     void setPos(int p);
     void printPlayer();
-    void addMoney(int money);
-    void payToPlayer(shared_ptr<Player> player, int money);
-    //TimsLine functions
-    void sendToTims();
-    bool isInTimsLine();
-    bool tryToLeaveTims(bool rolledDoubles);
-    void useTimsCup();
-    void addTimsCup() const;
 
+    bool isInLine();
+    void setInLine(bool isInLine);
+    int getTurnsInLine();
+    void incTurnsInLine();
+    int getCupNum();
+    void useCup();
+
+
+    // std::vector<int> getRolls() {
+    //     return rolls;
+    // }
+
+    std::string getName() const;
+
+
+    int getAssets();
+
+    void addMoney(int money);
+    void pay(int amount);
+
+
+
+    void payToPlayer(std::shared_ptr<Player> player, int money);
+    void addAsset(int pos); // takes position of building
+    void passedOSAP();
+    void setPre(int pos); // set previous position
+    int getPre() const;
+    // void attachDice(vector<std::shared_ptr<Dice>> dice);
+    // void assignBoard(std::shared_ptr<Board> board);
+
+
+
+    void addTimsCup();
+    bool canGetTimsCup();
+
+    void resetTurnsInLine();
 };
 
